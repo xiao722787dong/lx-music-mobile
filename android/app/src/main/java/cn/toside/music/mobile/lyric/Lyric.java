@@ -144,7 +144,7 @@ public class Lyric extends LyricPlayer {
   public void setLyric(String lyric, String translationLyric) {
     lyricText = lyric;
     lyricTransText = translationLyric;
-    if (lyricView != null) super.setLyric(lyric, isShowTranslation ? translationLyric : "");
+    if (isShowLyric) super.setLyric(lyric, isShowTranslation ? translationLyric : "");
   }
 
   @Override
@@ -160,6 +160,13 @@ public class Lyric extends LyricPlayer {
   public void onPlay(int lineNum) {
     updateLyric(lineNum);
     // Log.d("Lyric", lineNum + " " + text + " " + (String) line.get("translation"));
+  }
+
+  @Override
+  public void pause() {
+    super.pause();
+    if (!isShowLyric || isUseDesktopLyric) return;
+    if (statusBarLyric != null) statusBarLyric.stopLyric();
   }
 
   public void lockLyric() {
@@ -230,7 +237,7 @@ public class Lyric extends LyricPlayer {
       statusBarLyric = new StatusBarLyric(reactAppContext, null, reactAppContext.getPackageName(), false);
     }
     if (statusBarLyric.hasEnable()) {
-      statusBarLyric.updateLyric(lyricText);
+      // statusBarLyric.updateLyric(lyricText);
       isShowLyric = true;
       promise.resolve(null);
     } else {
