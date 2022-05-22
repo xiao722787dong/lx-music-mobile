@@ -141,7 +141,7 @@ public class Lyric extends LyricPlayer {
     ArrayList<String> extendedLyrics = new ArrayList<>(2);
     if (isShowTranslation && !"".equals(translationText)) extendedLyrics.add(translationText);
     if (isShowRoma && !"".equals(romaLyricText)) extendedLyrics.add(romaLyricText);
-    if (lyricView != null) super.setLyric(lyricText, extendedLyrics);
+    if (isShowLyric) super.setLyric(lyricText, extendedLyrics);
   }
 
   public void setLyric(String lyric, String translation, String romaLyric) {

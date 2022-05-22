@@ -865,7 +865,7 @@ export const toggleDesktopLyric = isShow => async(dispatch, getState) => {
         toast(err.message, 'long')
       }),
     ])
-    await lrcdSetLyric(player.isS2t ? tranditionalize(lyric) : lyric, player.isS2t ? tranditionalize(tlyric) : tlyric, rlyric)
+    await lrcdSetLyric(common.setting.player.isS2t ? tranditionalize(lyric) : lyric, common.setting.player.isS2t ? tranditionalize(tlyric) : tlyric, rlyric)
     if (player.status == STATUS.playing && !player.isGettingUrl) {
       getPosition().then(position => {
         lrcPlay(position * 1000)
@@ -880,10 +880,10 @@ export const setUseDesktopLyric = enable => async(dispatch, getState) => {
   const { common, player } = getState()
   const desktopLyric = common.setting.desktopLyric
 
-  const [{ lyric, tlyric }] = await Promise.all([
+  const [{ lyric, tlyric, rlyric }] = await Promise.all([
     desktopLyric.enable && _playMusicInfo
-      ? getLyric(_playMusicInfo).catch(() => ({ lyric: '', tlyric: '' }))
-      : Promise.resolve({ lyric: '', tlyric: '' }),
+      ? getLyric(_playMusicInfo).catch(() => ({ lyric: '', tlyric: '', rlyric: '' }))
+      : Promise.resolve({ lyric: '', tlyric: '', rlyric: '' }),
     lrcSetUseDesktopLyric({
       enable: desktopLyric.enable,
       isUseDesktopLyric: enable,
@@ -891,6 +891,8 @@ export const setUseDesktopLyric = enable => async(dispatch, getState) => {
       themeId: desktopLyric.theme,
       opacity: desktopLyric.style.opacity,
       textSize: desktopLyric.style.fontSize,
+      width: desktopLyric.width,
+      maxLineNum: desktopLyric.maxLineNum,
       positionX: desktopLyric.position.x,
       positionY: desktopLyric.position.y,
       textPositionX: desktopLyric.textPosition.x,
@@ -900,7 +902,7 @@ export const setUseDesktopLyric = enable => async(dispatch, getState) => {
       return Promise.reject(err)
     }),
   ])
-  await lrcdSetLyric(lyric, tlyric)
+  await lrcdSetLyric(common.setting.player.isS2t ? tranditionalize(lyric) : lyric, common.setting.player.isS2t ? tranditionalize(tlyric) : tlyric, rlyric)
   if (player.status == STATUS.playing && !player.isGettingUrl) {
     getPosition().then(position => {
       lrcPlay(position * 1000)
