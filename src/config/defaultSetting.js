@@ -4,7 +4,7 @@
 import { MUSIC_TOGGLE_MODE } from './constant'
 
 const defaultSetting = {
-  version: '1.20',
+  version: '1.22',
   player: {
     togglePlayMethod: MUSIC_TOGGLE_MODE.listLoop,
     highQuality: false,
@@ -14,7 +14,9 @@ const defaultSetting = {
     timeoutExitPlayed: true,
     isHandleAudioFocus: true,
     isShowLyricTranslation: false,
+    isShowLyricRoma: false,
     isShowNotificationImage: true,
+    isS2t: false, // 是否将歌词从简体转换为繁体
     portrait: {
       style: {
         lrcFontSize: 160,
@@ -31,6 +33,8 @@ const defaultSetting = {
     isUseDesktopLyric: true,
     isLock: false,
     theme: 'green',
+    width: 100,
+    maxLineNum: 5,
     // width: 380,
     // height: 420,
     position: {

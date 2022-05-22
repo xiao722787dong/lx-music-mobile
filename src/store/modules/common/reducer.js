@@ -306,6 +306,30 @@ const mutations = {
       },
     }
   },
+  [TYPES.setIsShowLyricRoma](state, isShowLyricRoma) {
+    return {
+      ...state,
+      setting: {
+        ...state.setting,
+        player: {
+          ...state.setting.player,
+          isShowLyricRoma,
+        },
+      },
+    }
+  },
+  [TYPES.setIsS2T](state, isS2t) {
+    return {
+      ...state,
+      setting: {
+        ...state.setting,
+        player: {
+          ...state.setting.player,
+          isS2t,
+        },
+      },
+    }
+  },
   [TYPES.setIsShowDesktopLyric](state, isShowDesktopLyric) {
     return {
       ...state,
@@ -389,6 +413,30 @@ const mutations = {
         desktopLyric: {
           ...state.setting.desktopLyric,
           position,
+        },
+      },
+    }
+  },
+  [TYPES.setDesktopLyricWidth](state, width) {
+    return {
+      ...state,
+      setting: {
+        ...state.setting,
+        desktopLyric: {
+          ...state.setting.desktopLyric,
+          width,
+        },
+      },
+    }
+  },
+  [TYPES.setDesktopLyricMaxLineNum](state, maxLineNum) {
+    return {
+      ...state,
+      setting: {
+        ...state.setting,
+        desktopLyric: {
+          ...state.setting.desktopLyric,
+          maxLineNum,
         },
       },
     }

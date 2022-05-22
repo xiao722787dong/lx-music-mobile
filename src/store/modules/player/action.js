@@ -20,12 +20,24 @@ import {
 import { getRandom } from '@/utils'
 import { getMusicUrl, saveMusicUrl, getLyric, saveLyric, assertApiSupport, savePlayInfo, saveList, checkNotificationPermission, toast } from '@/utils/tools'
 import { playInfo as playInfoGetter } from './getter'
-import { play as lrcPlay, setLyric, pause as lrcPause, toggleTranslation as lrcToggleTranslation } from '@/utils/lyric'
-import { showLyric, hideLyric, setUseDesktopLyric as lrcSetUseDesktopLyric, setLyric as lrcdSetLyric, toggleLock, setTheme, setLyricTextPosition, setAlpha, setTextSize } from '@/utils/lyricDesktop'
+import { play as lrcPlay, setLyric, pause as lrcPause, toggleTranslation as lrcToggleTranslation, toggleRoma as lrcToggleRoma } from '@/utils/lyric'
+import {
+  showLyric, hideLyric,
+  setUseDesktopLyric as lrcSetUseDesktopLyric,
+  setLyric as lrcdSetLyric,
+  toggleLock,
+  setTheme,
+  setLyricTextPosition,
+  setAlpha,
+  setTextSize,
+  setWidth,
+  setMaxLineNum,
+} from '@/utils/lyricDesktop'
 import { action as listAction } from '@/store/modules/list'
 import { LIST_ID_PLAY_LATER, MUSIC_TOGGLE_MODE } from '@/config/constant'
 import { i18n } from '@/plugins/i18n'
 // import { defaultList } from '../list/getter'
+import { tranditionalize } from '@/utils/simplify-chinese-main'
 
 export const TYPES = {
   setPic: null,
@@ -142,10 +154,10 @@ const handlePlayMusic = async({ getState, dispatch, playMusicInfo, musicInfo, is
         }
       })
     }
-    dispatch(getLrc(musicInfo)).then(({ lyric, tlyric }) => {
+    dispatch(getLrc(musicInfo)).then(({ lyric, tlyric, rlyric }) => {
       if (playMusicId != id) return
-      const player = getState().player
-      setLyric(lyric, tlyric)
+      const { common, player } = getState()
+      setLyric(common.setting.player.isS2t ? tranditionalize(lyric) : lyric, common.setting.player.isS2t ? tranditionalize(tlyric) : tlyric, rlyric)
       if (player.status == STATUS.playing && !player.isGettingUrl) {
         getPosition().then(position => {
           lrcPlay(position * 1000)
@@ -201,10 +213,10 @@ const handlePlayMusic = async({ getState, dispatch, playMusicInfo, musicInfo, is
       delayUpdateMusicInfo(buildTrack({ musicInfo, type }))
     })
   }
-  dispatch(getLrc(musicInfo)).then(({ lyric, tlyric }) => {
+  dispatch(getLrc(musicInfo)).then(({ lyric, tlyric, rlyric }) => {
     if (playMusicId != id) return
-    const player = getState().player
-    setLyric(lyric, tlyric)
+    const { common, player } = getState()
+    setLyric(common.setting.player.isS2t ? tranditionalize(lyric) : lyric, common.setting.player.isS2t ? tranditionalize(tlyric) : tlyric, rlyric)
     if (player.status == STATUS.playing && !player.isGettingUrl) {
       getPosition().then(position => {
         lrcPlay(position * 1000)
@@ -513,11 +525,15 @@ export const getPic = musicInfo => (dispatch, getState) => {
 }
 export const getLrc = musicInfo => async(dispatch, getState) => {
   let lyricInfo = await getLyric(musicInfo)
-  if (lyricInfo.lyric && lyricInfo.tlyric != null) return lyricInfo
+  if (lyricInfo.lyric && lyricInfo.tlyric != null) {
+    if (lyricInfo.rlyric == null) {
+      if (musicInfo.source != 'wy') return lyricInfo
+    } return lyricInfo
+  }
 
-  return handleGetLyric(dispatch, getState().player.listInfo.id, musicInfo).then(({ lyric, tlyric }) => {
+  return handleGetLyric(dispatch, getState().player.listInfo.id, musicInfo).then(({ lyric, tlyric, rlyric }) => {
     // picRequest = null
-    lyricInfo = { lyric, tlyric }
+    lyricInfo = { lyric, tlyric, rlyric }
     saveLyric(musicInfo, lyricInfo)
     return lyricInfo
   }).catch(err => {
@@ -799,14 +815,39 @@ export const toggleTranslation = isShow => async(dispatch, getState) => {
   }
 }
 
+export const toggleRoma = isShow => async(dispatch, getState) => {
+  lrcToggleRoma(isShow)
+  const player = getState().player
+  if (player.status == STATUS.playing && !player.isGettingUrl) {
+    getPosition().then(position => {
+      lrcPlay(position * 1000)
+    })
+  }
+}
+
+export const toggleS2T = () => async(dispatch, getState) => {
+  if (!global.playInfo.currentPlayMusicInfo) return
+  let id = playMusicId
+  dispatch(getLrc(global.playInfo.currentPlayMusicInfo)).then(({ lyric, tlyric, rlyric }) => {
+    if (playMusicId != id) return
+    const { common, player } = getState()
+    setLyric(common.setting.player.isS2t ? tranditionalize(lyric) : lyric, common.setting.player.isS2t ? tranditionalize(tlyric) : tlyric, rlyric)
+    if (player.status == STATUS.playing && !player.isGettingUrl) {
+      getPosition().then(position => {
+        lrcPlay(position * 1000)
+      })
+    }
+  })
+}
+
 export const toggleDesktopLyric = isShow => async(dispatch, getState) => {
   if (isShow) {
     const { common, player } = getState()
     const desktopLyric = common.setting.desktopLyric
-    const [{ lyric, tlyric }] = await Promise.all([
+    const [{ lyric, tlyric, rlyric }] = await Promise.all([
       _playMusicInfo
-        ? getLyric(_playMusicInfo).catch(() => ({ lyric: '', tlyric: '' }))
-        : Promise.resolve({ lyric: '', tlyric: '' }),
+        ? getLyric(_playMusicInfo).catch(() => ({ lyric: '', tlyric: '', rlyric: '' }))
+        : Promise.resolve({ lyric: '', tlyric: '', rlyric: '' }),
       showLyric({
         enable: desktopLyric.enable,
         isUseDesktopLyric: desktopLyric.isUseDesktopLyric,
@@ -814,6 +855,8 @@ export const toggleDesktopLyric = isShow => async(dispatch, getState) => {
         themeId: desktopLyric.theme,
         opacity: desktopLyric.style.opacity,
         textSize: desktopLyric.style.fontSize,
+        width: desktopLyric.width,
+        maxLineNum: desktopLyric.maxLineNum,
         positionX: desktopLyric.position.x,
         positionY: desktopLyric.position.y,
         textPositionX: desktopLyric.textPosition.x,
@@ -822,7 +865,7 @@ export const toggleDesktopLyric = isShow => async(dispatch, getState) => {
         toast(err.message, 'long')
       }),
     ])
-    await lrcdSetLyric(lyric, tlyric)
+    await lrcdSetLyric(player.isS2t ? tranditionalize(lyric) : lyric, player.isS2t ? tranditionalize(tlyric) : tlyric, rlyric)
     if (player.status == STATUS.playing && !player.isGettingUrl) {
       getPosition().then(position => {
         lrcPlay(position * 1000)
@@ -867,6 +910,12 @@ export const setUseDesktopLyric = enable => async(dispatch, getState) => {
 
 export const toggleDesktopLyricLock = isLock => async(dispatch, getState) => {
   toggleLock(isLock)
+}
+export const setDesktopLyricWidth = width => async(dispatch, getState) => {
+  setWidth(width)
+}
+export const setDesktopLyricMaxLineNum = maxLineNum => async(dispatch, getState) => {
+  setMaxLineNum(maxLineNum)
 }
 export const setDesktopLyricTheme = theme => async(dispatch, getState) => {
   setTheme(theme)

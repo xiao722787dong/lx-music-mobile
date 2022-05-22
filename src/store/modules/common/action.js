@@ -38,6 +38,8 @@ export const TYPES = {
   setIsHandleAudioFocus: null,
   setAddMusicLocationType: null,
   setIsShowLyricTranslation: null,
+  setIsShowLyricRoma: null,
+  setIsS2T: null,
   setIsEnableSync: null,
   setSyncStatus: null,
   setIsClickPlayList: null,
@@ -46,6 +48,8 @@ export const TYPES = {
   setIsLockDesktopLyric: null,
   setThemeDesktopLyric: null,
   setDesktopLyricPosition: null,
+  setDesktopLyricWidth: null,
+  setDesktopLyricMaxLineNum: null,
   setDesktopLyricTextPosition: null,
   setDesktopLyricStyle: null,
   setPlayerPortraitStyle: null,
@@ -321,6 +325,25 @@ export const setIsShowLyricTranslation = flag => async(dispatch, getState) => {
   await setData(settingKey, common.setting)
 }
 
+export const setIsShowLyricRoma = flag => async(dispatch, getState) => {
+  dispatch(playerAction.toggleRoma(flag))
+  dispatch({
+    type: TYPES.setIsShowLyricRoma,
+    payload: flag,
+  })
+  const { common } = getState()
+  await setData(settingKey, common.setting)
+}
+export const setIsS2T = flag => async(dispatch, getState) => {
+  dispatch({
+    type: TYPES.setIsS2T,
+    payload: flag,
+  })
+  dispatch(playerAction.toggleS2T())
+  const { common } = getState()
+  await setData(settingKey, common.setting)
+}
+
 export const setIsShowDesktopLyric = flag => async(dispatch, getState) => {
   await dispatch(playerAction.toggleDesktopLyric(flag))
   dispatch({
@@ -378,6 +401,24 @@ export const setDesktopLyricPosition = position => async(dispatch, getState) => 
   dispatch({
     type: TYPES.setDesktopLyricPosition,
     payload: position,
+  })
+  const { common } = getState()
+  await setData(settingKey, common.setting)
+}
+export const setDesktopLyricWidth = width => async(dispatch, getState) => {
+  dispatch(playerAction.setDesktopLyricWidth(width))
+  dispatch({
+    type: TYPES.setDesktopLyricWidth,
+    payload: width,
+  })
+  const { common } = getState()
+  await setData(settingKey, common.setting)
+}
+export const setDesktopLyricMaxLineNum = maxLineNum => async(dispatch, getState) => {
+  dispatch(playerAction.setDesktopLyricMaxLineNum(maxLineNum))
+  dispatch({
+    type: TYPES.setDesktopLyricMaxLineNum,
+    payload: maxLineNum,
   })
   const { common } = getState()
   await setData(settingKey, common.setting)

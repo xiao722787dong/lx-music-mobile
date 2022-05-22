@@ -58,10 +58,14 @@ export const themeDesktopLyric = state => state.common.setting.desktopLyric.them
 export const desktopLyricPosition = state => state.common.setting.desktopLyric.position
 export const desktopLyricTextPosition = state => state.common.setting.desktopLyric.textPosition
 export const desktopLyricStyle = state => state.common.setting.desktopLyric.style
+export const desktopLyricWidth = state => state.common.setting.desktopLyric.width
+export const desktopLyricMaxLineNum = state => state.common.setting.desktopLyric.maxLineNum
 
 export const timeoutExit = state => state.common.setting.player.timeoutExit
 export const timeoutExitPlayed = state => state.common.setting.player.timeoutExitPlayed
 export const isShowLyricTranslation = state => state.common.setting.player.isShowLyricTranslation
+export const isShowLyricRoma = state => state.common.setting.player.isShowLyricRoma
+export const isS2t = state => state.common.setting.player.isS2t
 
 export const activeApiSourceId = state => state.common.setting.apiSource
 

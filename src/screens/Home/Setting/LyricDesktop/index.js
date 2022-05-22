@@ -5,6 +5,8 @@ import IsShowLyric from './IsShowLyric'
 import IsLockLyric from './IsLockLyric'
 import IsUseDesktopLyric from './IsUseDesktopLyric'
 import TextSize from './TextSize'
+import ViewWidth from './ViewWidth'
+import MaxLineNum from './MaxLineNum'
 import TextOpacity from './TextOpacity'
 import TextPositionX from './TextPositionX'
 import TextPositionY from './TextPositionY'
@@ -21,6 +23,8 @@ export default memo(() => {
       <IsUseDesktopLyric />
       <Theme />
       <TextSize />
+      <ViewWidth />
+      <MaxLineNum />
       <TextOpacity />
       <TextPositionX />
       <TextPositionY />

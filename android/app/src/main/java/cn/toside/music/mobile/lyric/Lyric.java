@@ -28,12 +28,15 @@ public class Lyric extends LyricPlayer {
   int lastLine = 0;
   List lines = new ArrayList();
   boolean isShowTranslation;
+  boolean isShowRoma;
   String lyricText = "";
-  String lyricTransText = "";
+  String translationText = "";
+  String romaLyricText = "";
 
-  Lyric(ReactApplicationContext reactContext, boolean isShowTranslation) {
+  Lyric(ReactApplicationContext reactContext, boolean isShowTranslation, boolean isShowRoma) {
     this.reactAppContext = reactContext;
     this.isShowTranslation = isShowTranslation;
+    this.isShowRoma = isShowRoma;
     registerScreenBroadcastReceiver();
   }
 
@@ -70,11 +73,8 @@ public class Lyric extends LyricPlayer {
 
     if (isUseDesktopLyric) {
       if (lyricView != null) {
-        lyricView.runOnUiThread(new Runnable() {
-          @Override
-          public void run() {
-            lyricView.destroyView();
-          }
+        lyricView.runOnUiThread(() -> {
+          lyricView.destroyView();
         });
       }
     }
@@ -84,13 +84,10 @@ public class Lyric extends LyricPlayer {
     if (!isShowLyric) return;
     if (isUseDesktopLyric) {
       if (lyricView == null) lyricView = new LyricView(reactAppContext, lyricEvent);
-      lyricView.runOnUiThread(new Runnable() {
-        @Override
-        public void run() {
-          lyricView.showLyricView();
-          updateLyric(lastLine);
-          setTempPause(false);
-        }
+      lyricView.runOnUiThread(() -> {
+        lyricView.showLyricView();
+        updateLyric(lastLine);
+        setTempPause(false);
       });
     } else {
       updateLyric(lastLine);
@@ -104,17 +101,17 @@ public class Lyric extends LyricPlayer {
     if (lineNum < 0 || lineNum > lines.size() - 1) return;
     HashMap line = (HashMap) lines.get(lineNum);
     String lineLyric;
-    String lineLyricTranslation;
+    ArrayList<String> extendedLyrics;
     if (line == null) {
       lineLyric = "";
-      lineLyricTranslation = "";
+      extendedLyrics = new ArrayList<>(0);
     } else {
       lineLyric = (String) line.get("text");
-      lineLyricTranslation = (String) line.get("translation");
+      extendedLyrics = (ArrayList<String>) line.get("extendedLyrics");
     }
     if (isUseDesktopLyric) {
       if (lyricView == null) return;
-      lyricView.setLyric(lineLyric, lineLyricTranslation);
+      lyricView.setLyric(lineLyric, extendedLyrics);
     } else {
       if (statusBarLyric == null) return;
       statusBarLyric.updateLyric(lineLyric);
@@ -140,19 +137,26 @@ public class Lyric extends LyricPlayer {
     }
   }
 
-  @Override
-  public void setLyric(String lyric, String translationLyric) {
+  private void refreshLyric() {
+    ArrayList<String> extendedLyrics = new ArrayList<>(2);
+    if (isShowTranslation && !"".equals(translationText)) extendedLyrics.add(translationText);
+    if (isShowRoma && !"".equals(romaLyricText)) extendedLyrics.add(romaLyricText);
+    if (lyricView != null) super.setLyric(lyricText, extendedLyrics);
+  }
+
+  public void setLyric(String lyric, String translation, String romaLyric) {
     lyricText = lyric;
-    lyricTransText = translationLyric;
-    if (isShowLyric) super.setLyric(lyric, isShowTranslation ? translationLyric : "");
+    translationText = translation;
+    romaLyricText = romaLyric;
+    refreshLyric();
   }
 
   @Override
   public void onSetLyric(List lines) {
     this.lines = lines;
     // for (int i = 0; i < lines.size(); i++) {
-      // HashMap line = (HashMap) lines.get(i);
-      // Log.d("Lyric", (String) line.get("text") + " " + (String) line.get("translation"));
+    //   HashMap line = (HashMap) lines.get(i);
+    //   Log.d("Lyric", "onSetLyric: " +(String) line.get("text") + " " + line.get("extendedLyrics"));
     // }
   }
 
@@ -179,9 +183,24 @@ public class Lyric extends LyricPlayer {
     lyricView.unlockView();
   }
 
+  public void setMaxLineNum(int maxLineNum) {
+    if (lyricView == null) return;
+    lyricView.setMaxLineNum(maxLineNum);
+  }
+
+  public void setWidth(int width) {
+    if (lyricView == null) return;
+    lyricView.setWidth(width);
+  }
+
   public void toggleTranslation(boolean isShowTranslation) {
     this.isShowTranslation = isShowTranslation;
-    if (lyricView != null) super.setLyric(lyricText, isShowTranslation ? lyricTransText : "");
+    refreshLyric();
+  }
+
+  public void toggleRoma(boolean isShowRoma) {
+    this.isShowRoma = isShowRoma;
+    refreshLyric();
   }
 
   public void setColor(String color) {

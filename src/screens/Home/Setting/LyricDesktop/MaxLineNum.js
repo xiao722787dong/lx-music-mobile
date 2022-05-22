@@ -10,10 +10,10 @@ import { useTranslation } from '@/plugins/i18n'
 
 export default memo(() => {
   const { t } = useTranslation()
-  const { fontSize } = useGetter('common', 'desktopLyricStyle')
-  const setDesktopLyricStyle = useDispatch('common', 'setDesktopLyricStyle')
+  const maxLineNum = useGetter('common', 'desktopLyricMaxLineNum')
+  const setDesktopLyricMaxLineNum = useDispatch('common', 'setDesktopLyricMaxLineNum')
   const theme = useGetter('common', 'theme')
-  const [sliderSize, setSliderSize] = useState(fontSize)
+  const [sliderSize, setSliderSize] = useState(maxLineNum)
   const [isSliding, setSliding] = useState(false)
   const handleSlidingStart = useCallback(value => {
     setSliding(true)
@@ -22,23 +22,23 @@ export default memo(() => {
     setSliderSize(value)
   }, [])
   const handleSlidingComplete = useCallback(value => {
-    if (fontSize == value) return
-    setDesktopLyricStyle({ fontSize: value })
+    if (maxLineNum == value) return
+    setDesktopLyricMaxLineNum(value)
     setSliding(false)
-  }, [fontSize, setDesktopLyricStyle])
+  }, [maxLineNum, setDesktopLyricMaxLineNum])
 
   return (
-    <SubTitle title={t('setting_lyric_desktop_text_size')}>
+    <SubTitle title={t('setting_lyric_desktop_maxlineNum')}>
       <View style={styles.content}>
-        <Text style={{ color: theme.secondary10 }}>{isSliding ? sliderSize : fontSize}</Text>
+        <Text style={{ color: theme.secondary10 }}>{isSliding ? sliderSize : maxLineNum}</Text>
         <Slider
-          minimumValue={100}
-          maximumValue={500}
+          minimumValue={1}
+          maximumValue={8}
           onSlidingComplete={handleSlidingComplete}
           onValueChange={handleValueChange}
           onSlidingStart={handleSlidingStart}
-          step={2}
-          value={fontSize}
+          step={1}
+          value={maxLineNum}
         />
       </View>
     </SubTitle>

@@ -16,6 +16,8 @@ export const themes = [
   { id: 'purple', value: '#c851d4' },
   { id: 'orange', value: '#ffad12' },
   { id: 'grey', value: '#bdc3c7' },
+  { id: 'black', value: '#333333' },
+  { id: 'white', value: '#ffffff' },
 ]
 
 export const textPositionX = [
@@ -35,7 +37,7 @@ const getTextPositionY = y => (textPositionY.find(t => t.id == y) || textPositio
 const getAlpha = num => parseInt(num) / 100
 const getTextSize = num => parseInt(num) / 10
 
-const buildOptions = ({ isUseDesktopLyric, isLock, themeId, opacity, textSize, positionX, positionY, textPositionX, textPositionY }) => {
+const buildOptions = ({ isUseDesktopLyric, width, maxLineNum, isLock, themeId, opacity, textSize, positionX, positionY, textPositionX, textPositionY }) => {
   return {
     isUseDesktopLyric,
     isLock,
@@ -46,6 +48,8 @@ const buildOptions = ({ isUseDesktopLyric, isLock, themeId, opacity, textSize, p
     lyricViewY: positionY,
     textX: getTextPositionX(textPositionX),
     textY: getTextPositionY(textPositionY),
+    width,
+    maxLineNum,
   }
 }
 
@@ -112,9 +116,9 @@ export const pause = () => {
  * @param {String} translation lyric translation
  * @returns {Promise} Promise
  */
-export const setLyric = (lyric, translation) => {
+export const setLyric = (lyric, translation, romalrc) => {
   if (!isShowLyric) return Promise.resolve()
-  return LyricModule.setLyric(lyric, translation)
+  return LyricModule.setLyric(lyric, translation || '', romalrc || '')
 }
 
 /**
@@ -125,6 +129,16 @@ export const setLyric = (lyric, translation) => {
 export const toggleTranslation = isShowTranslation => {
   // if (!isShowLyric) return Promise.resolve()
   return LyricModule.toggleTranslation(isShowTranslation)
+}
+
+/**
+ * toggle show roma lyric
+ * @param {Boolean} isShowRoma is show roma lyric
+ * @returns {Promise} Promise
+ */
+export const toggleRoma = isShowRoma => {
+  // if (!isShowLyric) return Promise.resolve()
+  return LyricModule.toggleRoma(isShowRoma)
 }
 
 /**
@@ -165,6 +179,26 @@ export const setAlpha = alpha => {
 export const setTextSize = size => {
   if (!isShowLyric || !isUseDesktopLyric) return Promise.resolve()
   return LyricModule.setTextSize(getTextSize(size))
+}
+
+export const setPosition = (x, y) => {
+  if (!isShowLyric) return Promise.resolve()
+  return LyricModule.setPosition(x, y)
+}
+
+export const setMaxLineNum = maxLineNum => {
+  if (!isShowLyric) return Promise.resolve()
+  return LyricModule.setMaxLineNum(maxLineNum)
+}
+
+export const setWidth = width => {
+  if (!isShowLyric) return Promise.resolve()
+  return LyricModule.setWidth(width)
+}
+
+export const fixViewPosition = () => {
+  if (!isShowLyric) return Promise.resolve()
+  return LyricModule.fixViewPosition()
 }
 
 export const setLyricTextPosition = (textX, textY) => {
