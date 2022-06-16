@@ -98,17 +98,22 @@ public class Lyric extends LyricPlayer {
   private void updateLyric(int lineNum) {
     lastLine = lineNum;
     if (!isShowLyric) return;
-    if (lineNum < 0 || lineNum > lines.size() - 1) return;
-    HashMap line = (HashMap) lines.get(lineNum);
     String lineLyric;
     ArrayList<String> extendedLyrics;
-    if (line == null) {
+    if (lineNum < 0 || lineNum > lines.size() - 1) {
       lineLyric = "";
       extendedLyrics = new ArrayList<>(0);
     } else {
-      lineLyric = (String) line.get("text");
-      extendedLyrics = (ArrayList<String>) line.get("extendedLyrics");
+      HashMap line = (HashMap) lines.get(lineNum);
+      if (line == null) {
+        lineLyric = "";
+        extendedLyrics = new ArrayList<>(0);
+      } else {
+        lineLyric = (String) line.get("text");
+        extendedLyrics = (ArrayList<String>) line.get("extendedLyrics");
+      }
     }
+
     if (isUseDesktopLyric) {
       if (lyricView == null) return;
       lyricView.setLyric(lineLyric, extendedLyrics);
@@ -154,6 +159,7 @@ public class Lyric extends LyricPlayer {
   @Override
   public void onSetLyric(List lines) {
     this.lines = lines;
+    setViewLyric(-1);
     // for (int i = 0; i < lines.size(); i++) {
     //   HashMap line = (HashMap) lines.get(i);
     //   Log.d("Lyric", "onSetLyric: " +(String) line.get("text") + " " + line.get("extendedLyrics"));
@@ -191,6 +197,16 @@ public class Lyric extends LyricPlayer {
   public void setWidth(int width) {
     if (lyricView == null) return;
     lyricView.setWidth(width);
+  }
+
+  public void setSingleLine(boolean singleLine) {
+    if (lyricView == null) return;
+    lyricView.setSingleLine(singleLine);
+  }
+
+  public void setShowToggleAnima(boolean showToggleAnima) {
+    if (lyricView == null) return;
+    lyricView.setShowToggleAnima(showToggleAnima);
   }
 
   public void toggleTranslation(boolean isShowTranslation) {

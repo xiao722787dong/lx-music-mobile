@@ -37,9 +37,25 @@ const getTextPositionY = y => (textPositionY.find(t => t.id == y) || textPositio
 const getAlpha = num => parseInt(num) / 100
 const getTextSize = num => parseInt(num) / 10
 
-const buildOptions = ({ isUseDesktopLyric, width, maxLineNum, isLock, themeId, opacity, textSize, positionX, positionY, textPositionX, textPositionY }) => {
+const buildOptions = ({
+  isUseDesktopLyric,
+  isSingleLine,
+  isShowToggleAnima,
+  isLock,
+  themeId,
+  opacity,
+  textSize,
+  positionX,
+  positionY,
+  textPositionX,
+  textPositionY,
+  width,
+  maxLineNum,
+}) => {
   return {
     isUseDesktopLyric,
+    isSingleLine,
+    isShowToggleAnima,
     isLock,
     themeColor: getThemeColor(themeId),
     alpha: getAlpha(opacity),
@@ -179,6 +195,16 @@ export const setAlpha = alpha => {
 export const setTextSize = size => {
   if (!isShowLyric || !isUseDesktopLyric) return Promise.resolve()
   return LyricModule.setTextSize(getTextSize(size))
+}
+
+export const setShowToggleAnima = isShowToggleAnima => {
+  if (!isShowLyric) return Promise.resolve()
+  return LyricModule.setShowToggleAnima(isShowToggleAnima)
+}
+
+export const setSingleLine = isSingleLine => {
+  if (!isShowLyric) return Promise.resolve()
+  return LyricModule.setSingleLine(isSingleLine)
 }
 
 export const setPosition = (x, y) => {

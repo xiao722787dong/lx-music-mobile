@@ -258,6 +258,15 @@ const mutations = {
       },
     }
   },
+  [TYPES.setStartupAutoPlay](state, startupAutoPlay) {
+    return {
+      ...state,
+      setting: {
+        ...state.setting,
+        startupAutoPlay,
+      },
+    }
+  },
   [TYPES.setPlayerCacheSize](state, size) {
     return {
       ...state,
@@ -413,6 +422,30 @@ const mutations = {
         desktopLyric: {
           ...state.setting.desktopLyric,
           position,
+        },
+      },
+    }
+  },
+  [TYPES.setDesktopLyricSingleLine](state, isSingleLine) {
+    return {
+      ...state,
+      setting: {
+        ...state.setting,
+        desktopLyric: {
+          ...state.setting.desktopLyric,
+          isSingleLine,
+        },
+      },
+    }
+  },
+  [TYPES.setDesktopLyricShowToggleAnima](state, showToggleAnima) {
+    return {
+      ...state,
+      setting: {
+        ...state.setting,
+        desktopLyric: {
+          ...state.setting.desktopLyric,
+          showToggleAnima,
         },
       },
     }

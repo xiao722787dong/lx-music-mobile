@@ -62,6 +62,8 @@ const init = () => {
       showLyric({
         enable: setting.desktopLyric.enable,
         isUseDesktopLyric: setting.desktopLyric.isUseDesktopLyric,
+        isShowToggleAnima: setting.desktopLyric.showToggleAnima,
+        isSingleLine: setting.desktopLyric.isSingleLine,
         isLock: setting.desktopLyric.isLock,
         themeId: setting.desktopLyric.theme,
         opacity: setting.desktopLyric.style.opacity,
@@ -117,7 +119,12 @@ const init = () => {
 
         return
       }
-      global.restorePlayInfo = info
+
+      let setting = store.getState().common.setting
+      global.restorePlayInfo = {
+        info,
+        startupAutoPlay: setting.startupAutoPlay,
+      }
 
       store.dispatch(playerAction.setList({
         list: {

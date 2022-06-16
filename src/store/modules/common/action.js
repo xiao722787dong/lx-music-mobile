@@ -19,6 +19,7 @@ export const TYPES = {
   setNavScreenName: null,
   setPlayNextMode: null,
   setPrevSelectListId: null,
+  setStartupAutoPlay: null,
   setApiSource: null,
   setTheme: null,
   setIsAutoTheme: null,
@@ -49,6 +50,8 @@ export const TYPES = {
   setThemeDesktopLyric: null,
   setDesktopLyricPosition: null,
   setDesktopLyricWidth: null,
+  setDesktopLyricSingleLine: null,
+  setDesktopLyricShowToggleAnima: null,
   setDesktopLyricMaxLineNum: null,
   setDesktopLyricTextPosition: null,
   setDesktopLyricStyle: null,
@@ -171,6 +174,15 @@ export const setPlayNextMode = mode => async(dispatch, getState) => {
   const state = getState()
   if (mode == 'random') dispatch(playerAction.addMusicToPlayedList(playerGetter.playMusicInfo(state)))
   await setData(settingKey, state.common.setting)
+}
+
+export const setStartupAutoPlay = enable => async(dispatch, getState) => {
+  dispatch({
+    type: TYPES.setStartupAutoPlay,
+    payload: enable,
+  })
+  const { common } = getState()
+  await setData(settingKey, common.setting)
 }
 
 export const setApiSource = id => async(dispatch, getState) => {
@@ -401,6 +413,24 @@ export const setDesktopLyricPosition = position => async(dispatch, getState) => 
   dispatch({
     type: TYPES.setDesktopLyricPosition,
     payload: position,
+  })
+  const { common } = getState()
+  await setData(settingKey, common.setting)
+}
+export const setDesktopLyricSingleLine = isSingleLine => async(dispatch, getState) => {
+  dispatch(playerAction.setDesktopLyricSingleLine(isSingleLine))
+  dispatch({
+    type: TYPES.setDesktopLyricSingleLine,
+    payload: isSingleLine,
+  })
+  const { common } = getState()
+  await setData(settingKey, common.setting)
+}
+export const setDesktopLyricShowToggleAnima = showToggleAnima => async(dispatch, getState) => {
+  dispatch(playerAction.setDesktopLyricShowToggleAnima(showToggleAnima))
+  dispatch({
+    type: TYPES.setDesktopLyricShowToggleAnima,
+    payload: showToggleAnima,
   })
   const { common } = getState()
   await setData(settingKey, common.setting)

@@ -2,6 +2,7 @@ import TrackPlayer, { State } from 'react-native-track-player'
 import BackgroundTimer from 'react-native-background-timer'
 import { defaultUrl } from '@/config'
 import { getStore } from '@/store'
+import { action as playerAction } from '@/store/modules/player'
 
 const store = getStore()
 const list = []
@@ -98,7 +99,10 @@ export const playMusic = async(tracks, time) => {
       if (time) await TrackPlayer.seekTo(time)
       if (global.restorePlayInfo) {
         await TrackPlayer.pause()
+        let startupAutoPlay = global.restorePlayInfo.startupAutoPlay
         global.restorePlayInfo = null
+
+        if (startupAutoPlay) store.dispatch(playerAction.playMusic())
       } else {
         await TrackPlayer.play()
       }
@@ -131,7 +135,7 @@ export const updateMetaInfo = async track => {
   //   artwork = global.playInfo.musicInfo.img
   //   duration = global.playInfo.duration || 0
   // }
-
+  console.log(global.playInfo)
   global.playInfo.isPlaying = await TrackPlayer.getState() == State.Playing
   await TrackPlayer.updateNowPlayingMetadata({
     title: track.title || 'Unknow',
@@ -139,7 +143,7 @@ export const updateMetaInfo = async track => {
     album: track.album || null,
     artwork: isShowNotificationImage ? global.playInfo?.currentPlayMusicInfo?.img ?? null : null,
     duration: global.playInfo?.duration || 0,
-  }, global.playInfo.isPlaying)
+  }, global.playInfo?.isPlaying)
 }
 
 

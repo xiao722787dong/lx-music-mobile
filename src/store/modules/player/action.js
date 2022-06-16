@@ -20,7 +20,7 @@ import {
 import { getRandom } from '@/utils'
 import { getMusicUrl, saveMusicUrl, getLyric, saveLyric, assertApiSupport, savePlayInfo, saveList, checkNotificationPermission, toast } from '@/utils/tools'
 import { playInfo as playInfoGetter } from './getter'
-import { play as lrcPlay, setLyric, pause as lrcPause, toggleTranslation as lrcToggleTranslation, toggleRoma as lrcToggleRoma } from '@/utils/lyric'
+import { play as lrcPlay, setLyric, pause as lrcPause, stop as lrcStop, toggleTranslation as lrcToggleTranslation, toggleRoma as lrcToggleRoma } from '@/utils/lyric'
 import {
   showLyric, hideLyric,
   setUseDesktopLyric as lrcSetUseDesktopLyric,
@@ -32,6 +32,8 @@ import {
   setTextSize,
   setWidth,
   setMaxLineNum,
+  setSingleLine,
+  setShowToggleAnima,
 } from '@/utils/lyricDesktop'
 import { action as listAction } from '@/store/modules/list'
 import { LIST_ID_PLAY_LATER, MUSIC_TOGGLE_MODE } from '@/config/constant'
@@ -126,7 +128,7 @@ const handlePlayMusic = async({ getState, dispatch, playMusicInfo, musicInfo, is
     clearTimeout(timeout)
     timeout = null
   }
-  setLyric('')
+  // setLyric('')
   console.log('Handle Play Music ====================>', musicInfo.name)
   global.playInfo.currentPlayMusicInfo = _playMusicInfo = musicInfo
   let id = `${musicInfo.source}//${musicInfo.songmid}//${type}`
@@ -303,9 +305,11 @@ const getNextMusicInfo = state => {
  */
 export const stopMusic = () => async(dispatch, getState) => {
   _playMusicInfo = null
-  dispatch(setPlayIndex(-1))
+  await dispatch(playMusic(null))
   dispatch(setStatus({ status: STATUS.stop, text: '' }))
-  await stop()
+  lrcStop()
+  savePlayInfo(null)
+  delayUpdateMusicInfo({})
 }
 
 export const pauseMusic = () => async(dispatch, getState) => {
@@ -429,7 +433,7 @@ export const refreshMusicUrl = (musicInfo, restorePlayTime) => (dispatch, getSta
   }
   const songmid = targetMusic.songmid
   const index = state.player.listInfo.list.findIndex(m => m.songmid == songmid)
-  handlePlayMusic({
+  return handlePlayMusic({
     getState,
     dispatch,
     index,
@@ -480,6 +484,9 @@ export const playMusic = playMusicInfo => async(dispatch, getState) => {
         playIndex,
       },
     })
+    global.playInfo.currentPlayMusicInfo = _playMusicInfo = playMusicInfo
+    playMusicId = ''
+    global.playInfo.isPlaying = false
     await stop()
   } else { // 设置歌曲信息并播放歌曲
     setLyric('')
@@ -851,6 +858,8 @@ export const toggleDesktopLyric = isShow => async(dispatch, getState) => {
       showLyric({
         enable: desktopLyric.enable,
         isUseDesktopLyric: desktopLyric.isUseDesktopLyric,
+        isShowToggleAnima: desktopLyric.showToggleAnima,
+        isSingleLine: desktopLyric.isSingleLine,
         isLock: desktopLyric.isLock,
         themeId: desktopLyric.theme,
         opacity: desktopLyric.style.opacity,
@@ -912,6 +921,12 @@ export const setUseDesktopLyric = enable => async(dispatch, getState) => {
 
 export const toggleDesktopLyricLock = isLock => async(dispatch, getState) => {
   toggleLock(isLock)
+}
+export const setDesktopLyricSingleLine = isSingleLine => async(dispatch, getState) => {
+  setSingleLine(isSingleLine)
+}
+export const setDesktopLyricShowToggleAnima = showToggleAnima => async(dispatch, getState) => {
+  setShowToggleAnima(showToggleAnima)
 }
 export const setDesktopLyricWidth = width => async(dispatch, getState) => {
   setWidth(width)

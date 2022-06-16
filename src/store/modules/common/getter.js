@@ -11,6 +11,8 @@ export const common = state => state.common
 export const navMenus = state => state.common.nav.menus
 export const navActiveIndex = state => state.common.nav.activeIndex
 
+export const startupAutoPlay = state => state.common.setting.startupAutoPlay
+
 export const setting = state => state.common.setting
 
 export const componentIds = state => state.common.componentIds
@@ -58,6 +60,8 @@ export const themeDesktopLyric = state => state.common.setting.desktopLyric.them
 export const desktopLyricPosition = state => state.common.setting.desktopLyric.position
 export const desktopLyricTextPosition = state => state.common.setting.desktopLyric.textPosition
 export const desktopLyricStyle = state => state.common.setting.desktopLyric.style
+export const desktopLyricSingleLine = state => state.common.setting.desktopLyric.isSingleLine
+export const desktopLyricShowToggleAnima = state => state.common.setting.desktopLyric.showToggleAnima
 export const desktopLyricWidth = state => state.common.setting.desktopLyric.width
 export const desktopLyricMaxLineNum = state => state.common.setting.desktopLyric.maxLineNum
 

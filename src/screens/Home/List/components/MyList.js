@@ -11,7 +11,7 @@ import Menu from '@/components/common/Menu'
 import ConfirmAlert from '@/components/common/ConfirmAlert'
 import Input from '@/components/common/Input'
 import { filterFileName } from '@/utils'
-import { getListScrollPosition, saveListScrollPosition, toast, handleSaveFile, handleReadFile, confirmDialog } from '@/utils/tools'
+import { getListScrollPosition, saveListScrollPosition, toast, handleSaveFile, handleReadFile, confirmDialog, showImportTip } from '@/utils/tools'
 import { LIST_SCROLL_POSITION_KEY, LXM_FILE_EXT_RXP } from '@/config/constant'
 import musicSdk from '@/utils/music'
 import ChoosePath from '@/components/common/ChoosePath'
@@ -95,7 +95,7 @@ const ImportExport = ({ actionType, visible, hide, selectedListRef }) => {
       case 'import':
         toast(t('setting_backup_part_import_list_tip_unzip'))
         importList(path).then(async listData => {
-          if (listData.type != 'playListPart') return toast(t('list_import_part_tip_failed'))
+          if (listData.type != 'playListPart') return showImportTip(listData.type)
           const targetList = global.allList[listData.data.id]
           if (targetList) {
             const confirm = await confirmDialog({
@@ -141,7 +141,7 @@ const ImportExport = ({ actionType, visible, hide, selectedListRef }) => {
         })
         break
     }
-  }, [actionType, createUserList, hide, setList, t])
+  }, [actionType, createUserList, hide, selectedListRef, setList, t])
 
   return (
     <ChoosePath
@@ -261,7 +261,13 @@ const List = memo(({ setVisiblePanel, currentList, handleCancelMultiSelect }) =>
         handleImportAndExportList('export', selectedListRef.current.index)
         break
       case 'sync':
-        handleSyncSourceList(selectedListRef.current.index)
+        confirmDialog({
+          message: t('list_sync_confirm_tip', { name: selectedListRef.current.name }),
+          confirmButtonText: t('list_remove_tip_button'),
+        }).then(isSync => {
+          if (!isSync) return
+          handleSyncSourceList(selectedListRef.current.index)
+        })
         break
         // case 'changePosition':
 
