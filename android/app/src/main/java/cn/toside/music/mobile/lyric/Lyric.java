@@ -159,7 +159,7 @@ public class Lyric extends LyricPlayer {
   @Override
   public void onSetLyric(List lines) {
     this.lines = lines;
-    setViewLyric(-1);
+    updateLyric(-1);
     // for (int i = 0; i < lines.size(); i++) {
     //   HashMap line = (HashMap) lines.get(i);
     //   Log.d("Lyric", "onSetLyric: " +(String) line.get("text") + " " + line.get("extendedLyrics"));
