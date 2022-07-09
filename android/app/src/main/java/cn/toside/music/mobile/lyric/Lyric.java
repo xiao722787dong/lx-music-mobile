@@ -172,11 +172,14 @@ public class Lyric extends LyricPlayer {
     // Log.d("Lyric", lineNum + " " + text + " " + (String) line.get("translation"));
   }
 
-  @Override
-  public void pause() {
-    super.pause();
-    if (!isShowLyric || isUseDesktopLyric) return;
-    if (statusBarLyric != null) statusBarLyric.stopLyric();
+  public void pauseLyric() {
+    pause();
+    if (!isShowLyric) return;
+    if (isUseDesktopLyric) {
+      if (lyricView != null) lyricView.setLyric("", new ArrayList<>(0));
+    } else {
+      if (statusBarLyric != null) statusBarLyric.stopLyric();
+    }
   }
 
   public void lockLyric() {
